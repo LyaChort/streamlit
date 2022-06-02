@@ -8,17 +8,20 @@ from sklearn.model_selection import train_test_split
 
 
 def main():
-    df = pd.read_csv('https://pastebin.com/raw/uqR5u3VU')
-    df.drop(df.columns[0], axis=1, inplace=True)
-    X = np.array(df.drop(['Classes  '], axis=1))
-    y = np.array(df['Classes  '])
+    df = pd.read_csv("winequalityN_preprocessed.csv", sep=",", skiprows=1,
+                     names=['Тип вина', 'Фиксированная кислотность', 'Летучая кислотность', 'Лимонная кислота',
+                            'Остаточный сахар', 'Хлориды', 'Свободный диоксид серы', 'Общий диоксид серы',
+                            'Плотность вина', 'pH', 'Сульфаты', 'Содеражние алкоголя', 'Качество вина', ])
+    df_edited = df.drop(['Тип вина'], axis=1)
+    X = df_edited.iloc[:, :-1].values
+    y = df.iloc[:, 0].values
     y = y.astype(np.int64)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=42)
     clf = KNeighborsClassifier()
     clf.fit(X_train, y_train)
     page = st.sidebar.selectbox("Выберите страницу", ('Основная', 'Все, связанное с моделью'))
     if page == 'Основная':
-        st.title('Исследуем датасет с пожарами в Алжире')
+        st.title('Исследуем датасет с винами')
         st.write("Просто датафрейм")
         st.dataframe(df)
     elif page == 'Все, связанное с моделью':
@@ -30,7 +33,9 @@ def main():
         sns.heatmap(df.corr(), annot=True, ax=ax)
         st.pyplot(fig)
         st.text('Влияние различных классов')
-        cols = ['Тип вина', 'Фиксированная кислотность', 'Летучая кислотность', 'Лимонная кислота', 'Остаточный сахар', 'Хлориды', 'Свободный диоксид серы', 'Общий диоксид серы', 'Плотность вина', 'pH', 'Сульфаты', 'Содеражние алкоголя', 'Качество вина']
+        cols = ['Тип вина', 'Фиксированная кислотность', 'Летучая кислотность', 'Лимонная кислота', 'Остаточный сахар',
+                'Хлориды', 'Свободный диоксид серы', 'Общий диоксид серы', 'Плотность вина', 'pH', 'Сульфаты',
+                'Содеражние алкоголя', 'Качество вина']
         sns_plot = sns.pairplot(df[cols])
         st.pyplot(sns_plot)
         st.title('Моделируем')
